@@ -95,7 +95,7 @@ Explore the [architecture notes](docs/architecture.md) and [routing verification
 
 ## Author
 
-**William Vainqueur** · CCNA 200-301 · HashiCorp Terraform Associate
+**William Vainqueur** · CCNA 200-301 · ITIL v5
 
 [Original LinkedIn project post](https://www.linkedin.com/posts/william-vainqueur_cisco-networking-routing-activity-7406619213819330560-lNrX)
 
