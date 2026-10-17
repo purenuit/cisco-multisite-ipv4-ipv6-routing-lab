@@ -91,7 +91,6 @@ Explore the [architecture notes](docs/architecture.md) and [routing verification
 - [ ] IPv4/IPv6 addressing plan
 - [ ] Sanitized router running configurations
 - [ ] CLI verification outputs and screenshots
-- [ ] Network automation exercises
 
 ## Author
 
