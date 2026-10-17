@@ -1,0 +1,3 @@
+Cisco multi-site IPv4/IPv6 routing lab — Marseille, Lyon and Paris.
+Dynamic routing: OSPFv2/OSPFv3, RIPv2/RIPng, BGP; static routing and subnetting.
+Original Packet Tracer file and actual router configurations still pending.
