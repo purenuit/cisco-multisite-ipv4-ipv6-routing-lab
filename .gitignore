@@ -1,0 +1,13 @@
+# Common system/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+*.bak
+*.tmp
+# Never commit private credentials
+.env
+.env.*
+*.pem
+*.key
