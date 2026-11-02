@@ -1,59 +1,102 @@
-# Cisco Multi-Site Routing Lab — IPv4 / IPv6
+# Multi-Site Infrastructure Lab — IPv4 / IPv6 Addressing & Routing
 
-**Marseille (AS 200) · Lyon (AS 100) · Paris (AS 300)**  
-Cisco Packet Tracer | 8 Cisco 2911 routers | RIPv2 / RIPng | OSPFv2 / OSPFv3 | eBGP | IPv4 / IPv6
+**Cisco Packet Tracer | Marseille · Lyon · Paris | Configuration entirely through Cisco IOS CLI**
 
-A hands-on, CLI-configured, dual-stack routing lab interconnecting three autonomous systems. This repository now documents the **actual topology and device commands** supplied with the project, rather than a conceptual illustration.
+## 1. Project overview
 
-> **Important limitation:** Inter-AS BGP is implemented for **IPv4**. The Packet Tracer router image used in this lab does not support the required MP-BGP IPv6 implementation; the IPv6 inter-AS paths were therefore handled with **static routes**. This is not IPv6 BGP.
+This lab simulates a multi-site network infrastructure connecting **Marseille, Lyon and Paris**. I configured the routers entirely from the command line, combining IPv4 subnetting (FLSM/VLSM), IPv6 addressing, interior routing protocols and interconnection between distinct autonomous systems.
 
-## Original Packet Tracer topology
+The goal was to understand how addressing choices, routing protocol boundaries and router configuration affect end-to-end connectivity across several sites.
 
-The **only authoritative diagram** for this project is my original Cisco Packet Tracer topology, supplied as `plan.png` / `plan2.png` and `PLAN ADDRESSAGE.pkt`. No regenerated, conceptual or substitute network diagram is used here.
+## 2. The network I designed
 
-The original image and `.pkt` file must be uploaded to the repository before an image can be embedded here. Inter-AS serial links shown in the original plan: **R1–R3 (13.0.0.0/30)**, **R2–R4 (24.0.0.0/30)** and **R3–R4 (34.0.0.0/30)**.
+**The original Packet Tracer topology is the reference for this project.** No generated or alternative diagram is used. The actual topology diagrams are `plan.png` and `plan2.png`.
 
-| Site | AS | Routers | IPv4 site prefix | IPv6 site prefix | Interior routing |
-| --- | --- | --- | --- | --- | --- |
-| Marseille | 200 | R0, R1, R2 | 192.168.0.0/16 (split into /18 LANs and /30 links) | 2001:DB8:A::/48 | RIPv2 + RIPng |
-| Lyon | 100 | R3, R5 | 10.10.0.0/16 | 2001:DB8:B::/48 | Static routing |
-| Paris | 300 | R4, R6, R7 | 172.16.0.0/16 | 2001:DB8:C::/48 | OSPFv2 + OSPFv3 |
+The lab is divided into three autonomous systems:
 
-### Protocol design
+| Site | Autonomous system | Routers | IPv4 site range | IPv6 site range |
+| --- | --- | --- | --- | --- |
+| Marseille | AS 200 | R0, R1, R2 | 192.168.0.0/16 | 2001:DB8:A::/48 |
+| Lyon | AS 100 | R3, R5 | 10.10.0.0/16 | 2001:DB8:B::/48 |
+| Paris | AS 300 | R4, R6, R7 | 172.16.0.0/16 | 2001:DB8:C::/48 |
 
-- **Marseille:** RIPv2 for internal IPv4 routes, RIPng for internal IPv6 routes; R1 and R2 are eBGP edges.
-- **Lyon:** R3 peers via eBGP with R1 and R4; R5 uses static/default routes for its LANs.
-- **Paris:** OSPFv2 (process 10) and OSPFv3 (process 11) use backbone **area 0** and access **areas 1 and 2**. R4 is the eBGP edge; R6 and R7 provide site LAN routing.
-- **Routing controls:** configured OSPF costs, router IDs, neighbor timers, interface priorities, passive interfaces, reference bandwidth, route redistribution/default-route experiments and OSPFv2 MD5 authentication.
-- **IPv6 inter-AS:** documented static routes, rather than unsupported MP-BGP IPv6.
+The links between autonomous systems connect **R1–R3**, **R2–R4** and **R3–R4**. The actual Packet Tracer screenshots show individual LAN segments, point-to-point links, switch connections and addressing labels.
 
-### Verification evidence
+## 3. Addressing: building the foundation
 
-Original screenshots show successful IPv4 probes from PC2 to **192.168.64.2**, **10.10.0.2**, **10.10.0.130**, **172.16.0.2**, **172.16.4.2**, and **172.16.6.2** (1/1 replies each). PC61 shows successful IPv6 probes to **2001:DB8:C:1::2** and **2001:DB8:C:2::2** (4/4 each), and IPv4 probes to **172.16.4.2** and **172.16.6.2** (4/4 each). A router R4 screenshot also displays OSPF neighbors **6.6.6.6** and **7.7.7.7** in FULL state.
+I began by assigning **IPv4 and IPv6 addresses** across the site LANs and inter-router links. The network uses different subnet sizes depending on the role of each connection: LAN subnets for hosts and /30 IPv4 networks for point-to-point connections.
 
-These are **individual sampled checks**, not proof of comprehensive reachability, convergence, failover, or throughput.
+For example:
+- Marseille hosts use the 192.168.0.0/18 and 192.168.64.0/18 LANs.
+- Lyon has two 10.10.0.0/25 and 10.10.0.128/25 host networks.
+- Paris uses 172.16.0.0/22, 172.16.4.0/23 and 172.16.6.0/26 LANs.
+- The three inter-AS IPv4 links use 13.0.0.0/30, 24.0.0.0/30 and 34.0.0.0/30.
 
-## Repository guide
+All three sites also have IPv6 prefixes with /64 subnets for individual links and LANs.
 
-| Location | Contents |
+## 4. Routing within each site
+
+### Marseille — RIPv2 and RIPng
+
+On **R0, R1 and R2**, I worked with **RIPv2 for IPv4** and **RIPng for IPv6**. This gave me a practical example of distance-vector routing for a limited internal scope, with interface controls and route propagation between the routers.
+
+### Lyon — static routing
+
+On the Lyon site, **R3 and R5** connect the local networks to the other autonomous systems. R5's configuration includes IPv4/IPv6 default routing, while R3 connects the site to the inter-AS routing infrastructure. This demonstrates the role of explicit next-hop routes in a smaller routing domain.
+
+### Paris — multi-area OSPFv2 and OSPFv3
+
+On **R4, R6 and R7**, I configured hierarchical routing with **OSPFv2 (IPv4)** and **OSPFv3 (IPv6)**. The design includes **area 0** for backbone links and separate **areas 1 and 2** for the Paris LAN segments.
+
+I also worked with **OSPF costs, interface priorities, Hello/Dead timers, passive interfaces and OSPFv2 MD5 authentication**, as shown in the router CLI screenshots. These parameters gave me a way to explore routing behavior beyond simply enabling a protocol.
+
+## 5. Interconnecting three autonomous systems
+
+After establishing the site routing design, I configured **eBGP for IPv4 route exchange** between three autonomous systems:
+
+| Routers | Autonomous systems | IPv4 interconnection |
+| --- | --- | --- |
+| R1 ↔ R3 | AS 200 ↔ AS 100 | 13.0.0.0/30 |
+| R2 ↔ R4 | AS 200 ↔ AS 300 | 24.0.0.0/30 |
+| R3 ↔ R4 | AS 100 ↔ AS 300 | 34.0.0.0/30 |
+
+The router captures also document the use of **loopback interfaces, default routes and static routing**. In this Packet Tracer lab, inter-AS IPv6 routing was addressed using static routes rather than claiming MP-BGP IPv6 support.
+
+## 6. Testing and validation
+
+After configuration, I checked connectivity using the Packet Tracer PC command prompts and Cisco IOS diagnostic commands.
+
+**IPv4 — PC2:** the captured one-packet tests received replies from all of the following destinations:
+
+| Destination | Result |
 | --- | --- |
-| [docs/architecture.md](docs/architecture.md) | Detailed site/address/routing design |
-| [docs/verification.md](docs/verification.md) | Actual observed results and commands for further checks |
-| [configs/](configs/) | Sanitized supplied router command scripts R0–R7 |
-| [topology/](topology/) | Original Cisco Packet Tracer project and diagrams (provided in downloadable project bundle) |
-| [screenshots/](screenshots/) | Captured routing tests and router CLI evidence (provided in downloadable project bundle) |
+| 192.168.64.2 | 1/1 replies |
+| 10.10.0.2 | 1/1 replies |
+| 10.10.0.130 | 1/1 replies |
+| 172.16.0.2 | 1/1 replies |
+| 172.16.4.2 | 1/1 replies |
+| 172.16.6.2 | 1/1 replies |
 
-**Publication note:** The original binary `.pkt` project and screenshots still need to be uploaded to GitHub separately; the README does not claim they are already hosted here. Router command transcripts are lab notes, **not automatically verified complete running configurations**. Verify current `show running-config` before production-like reuse.
+**IPv6 — PC61:** `2001:DB8:C:1::2` and `2001:DB8:C:2::2` each returned **4/4 replies**. The same PC also reached IPv4 addresses `172.16.4.2` and `172.16.6.2` with **4/4 replies**.
 
-## Technical caveats and lessons learned
+**OSPF adjacency — R4:** `show ip ospf neighbor` shows R6 (`6.6.6.6`) and R7 (`7.7.7.7`) in **FULL** state. `show ip ospf database` was also used to inspect the link-state database.
 
-- eBGP covers IPv4 in this lab; IPv6 connectivity across AS boundaries requires static routes here.
-- Some written commands contain typos, inconsistent network statements or interface-specific values. These are preserved or flagged in the original study material, not assumed to be correct.
-- Default routes pointing to a Loopback0 interface, especially `0.0.0.0/0` or `::/0`, are lab experiments and are **not a substitute for a usable upstream next hop**.
-- OSPF MD5 shared secrets are redacted in any public configuration.
-- Confirm adjacencies, actual installed prefixes, and two-way tests after opening the `.pkt` file.
+These screenshots demonstrate the listed successful tests. They do **not**, by themselves, prove every possible cross-site IPv6 route, convergence scenario or redundancy test.
 
-## Author
+## 7. What this lab taught me
 
-**William Vainqueur** · CCNA 200-301 · ITIL v5 · Terraform Associate  
-[Original LinkedIn post](https://www.linkedin.com/posts/william-vainqueur_cisco-networking-routing-activity-7406619213819330560-lNrX)
+This project connected several routing topics into one practical exercise: how to plan networks, assign subnets, configure interfaces and routing processes, connect autonomous systems, and then confirm the results from the network devices and PCs.
+
+It also reinforced that a correct-looking configuration is only a starting point. Verifying routes, neighbor relationships and actual reachability is essential.
+
+## Original project materials
+
+- **Topology:** original `plan.png` and `plan2.png` screenshots and `PLAN ADDRESSAGE.pkt` file
+- **Router configuration evidence:** CLI screenshots from **R0 through R7**
+- **Validation:** `PINGIPV4.png`, `PING OSPFV6V4.png` and OSPF diagnostic captures
+
+> The screenshots and Packet Tracer project are the authoritative source. This text is a narrative of the configuration and results they show; it is not a generated alternative topology.
+
+**Tools:** Cisco Packet Tracer · Cisco IOS CLI · IPv4 / IPv6 · RIPv2 / RIPng · OSPFv2 / OSPFv3 · BGP
+
+[Original LinkedIn project post](https://www.linkedin.com/posts/william-vainqueur_cisco-networking-routing-activity-7406619213819330560-lNrX)
