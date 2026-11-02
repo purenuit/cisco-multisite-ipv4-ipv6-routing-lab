@@ -83,7 +83,46 @@ After configuration, I checked connectivity using the Packet Tracer PC command p
 
 These screenshots demonstrate the listed successful tests. They do **not**, by themselves, prove every possible cross-site IPv6 route, convergence scenario or redundancy test.
 
-## 7. What this lab taught me
+## 7. Router configuration — Cisco IOS commands
+
+The following transcripts are based on the supplied router materials. They document commands used during configuration rather than certified final running configurations. The original CLI screenshots should be viewed alongside them. Shared authentication keys are redacted.
+
+| Router | CLI commands |
+| --- | --- |
+| Marseille R0 | [R0 commands](configs/R0-cli-excerpt.txt) |
+| Marseille R1 | [R1 commands](configs/R1-cli-excerpt.txt) |
+| Marseille R2 | [R2 commands](configs/R2-cli-excerpt.txt) |
+| Lyon R3 | [R3 commands](configs/R3-cli-excerpt.txt) |
+| Lyon R5 | [R5 commands](configs/R5-cli-excerpt.txt) |
+| Paris R4 | [R4 commands](configs/R4-cli-excerpt.txt) |
+| Paris R6 | [R6 commands](configs/R6-cli-excerpt.txt) |
+| Paris R7 | [R7 commands](configs/R7-cli-excerpt.txt) |
+
+**Illustrative commands from the original configuration:**
+
+```ios
+! Paris / R6 : OSPFv2 (process 10)
+router ospf 10
+ router-id 6.6.6.6
+ network 172.16.6.64 0.0.0.3 area 0
+ network 172.16.0.0 0.0.3.255 area 1
+ network 172.16.4.0 0.0.1.255 area 1
+
+! Paris / R6 : OSPFv3 (process 11)
+ipv6 router ospf 11
+ router-id 6.6.6.6
+interface g0/2
+ ipv6 ospf 11 area 0
+
+! Inter-AS IPv4 BGP : R3 / AS100
+router bgp 100
+ neighbor 13.0.0.1 remote-as 200
+ neighbor 34.0.0.2 remote-as 300
+```
+
+Some source command lines contain apparent errors or inconsistencies, notably R5's IPv4 default next hop and R7's initial LAN subnet mask. They are documented, not silently corrected or claimed as successfully applied.
+
+## 8. What this lab taught me
 
 This project connected several routing topics into one practical exercise: how to plan networks, assign subnets, configure interfaces and routing processes, connect autonomous systems, and then confirm the results from the network devices and PCs.
 
