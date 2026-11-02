@@ -10,3 +10,4 @@ The full, original lab contains **Marseille (AS200), Lyon (AS100), Paris (AS300)
 - Paris interior: R4 ↔ R6 and R4 ↔ R7
 
 The original `PLAN ADDRESSAGE.pkt` and topology screenshots are included in the project materials supplied for documentation; the GitHub copy of those **binary files** still requires separate upload. See [architecture](../docs/architecture.md) for detailed interfaces and protocols.
+![Original Multi-Site Network Architecture](plan.png)
