@@ -1,0 +1,21 @@
+# Selected CLI excerpt based on supplied evidence; not a full export.
+en
+conf t
+hostname R3
+int g0/2
+ip address 10.10.1.1 255.255.255.252
+no shutdown
+exit
+int s0/0/0
+ip address 13.0.0.2 255.255.255.252
+no shutdown
+exit
+int s0/0/1
+ip address 34.0.0.1 255.255.255.252
+no shutdown
+exit
+router bgp 100
+neighbor 13.0.0.1 remote-as 200
+neighbor 34.0.0.2 remote-as 300
+exit
+ipv6 unicast-routing
