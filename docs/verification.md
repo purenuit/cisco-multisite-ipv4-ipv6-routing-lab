@@ -1,74 +1,48 @@
-# Cisco IOS routing verification checklist
+# Verification evidence and follow-up checks
 
-These are **suggested commands**, not claimed test results. Syntax and support depend on IOS/Packet Tracer version.
+## Observed results in the supplied screenshots
 
-## Interfaces and addresses
+| Source | Destination | Protocol | Observed |
+| --- | --- | --- | --- |
+| PC2 | 192.168.64.2 | IPv4 | 1 sent, 1 received |
+| PC2 | 10.10.0.2 | IPv4 | 1 sent, 1 received |
+| PC2 | 10.10.0.130 | IPv4 | 1 sent, 1 received |
+| PC2 | 172.16.0.2 | IPv4 | 1 sent, 1 received |
+| PC2 | 172.16.4.2 | IPv4 | 1 sent, 1 received |
+| PC2 | 172.16.6.2 | IPv4 | 1 sent, 1 received |
+| PC61 | 2001:DB8:C:1::2 | IPv6 | 4 sent, 4 received |
+| PC61 | 2001:DB8:C:2::2 | IPv6 | 4 sent, 4 received |
+| PC61 | 172.16.4.2 | IPv4 | 4 sent, 4 received |
+| PC61 | 172.16.6.2 | IPv4 | 4 sent, 4 received |
 
-```text
+R4 screenshot: `show ip ospf neighbor` displays router IDs **6.6.6.6** and **7.7.7.7** in **FULL** state; `show ip ospf database` displays OSPF link-state information.
+
+All listed pings succeeded in the captured runs. Results cannot establish sustained reliability, all-to-all IPv6 routing, BGP convergence, failover behavior or end-to-end security.
+
+## Reproducible CLI checklist
+
+```ios
 show ip interface brief
 show ipv6 interface brief
-show running-config
-```
-
-- Verify up/up interfaces, correct IPv4/IPv6 addressing and expected active configurations.
-- Remove passwords, credentials, keys and public IPs if needed before uploading configurations.
-
-## IPv4 and IPv6 route tables
-
-```text
 show ip route
 show ipv6 route
-```
-
-Check destination prefixes and next hops. The presence of a route does not alone prove connectivity.
-
-## OSPFv2 / OSPFv3
-
-```text
-show ip ospf neighbor
-show ip ospf interface
-show ipv6 ospf neighbor
-```
-
-Check expected neighbors and adjacency stability. Older Packet Tracer images may not support every command.
-
-## RIPv2 / RIPng
-
-```text
 show ip protocols
 show ipv6 protocols
-```
-
-Verify configured processes and the presence of appropriate RIP-learned routes in the routing table.
-
-## BGP
-
-```text
+show ip ospf neighbor
+show ipv6 ospf neighbor
+show ip ospf database
 show ip bgp summary
 show ip bgp
-show bgp ipv6 unicast summary
-show bgp ipv6 unicast
 ```
 
-Use the platform-supported command variants and confirm that expected sessions and learned prefixes exist.
+On PCs, use Packet Tracer's `ping <address>` and `tracert <address>` syntax.
 
-## End-to-end connectivity
+### Additional tests to run
+- Verify eBGP **Established** state on all three inter-AS links.
+- Confirm that BGP-advertised IPv4 prefixes are truly installed and received.
+- From each LAN, test IPv4 and IPv6 reachability to **every other site** (not just local Paris IPv6).
+- Inspect static IPv6 inter-AS routing in both directions.
+- Test link failure, reconvergence and alternate-route behavior before describing the lab as fault-tolerant.
+- Verify `show running-config` rather than relying solely on historical typed commands.
 
-```text
-ping <destination-ipv4>
-ping ipv6 <destination-ipv6>
-traceroute <destination-ipv4>
-traceroute ipv6 <destination-ipv6>
-```
-
-Replace placeholders with actual lab addresses. Validate local, inter-subnet and cross-site paths.
-
-## Evidence to collect
-
-- [ ] Interface and IP addressing outputs
-- [ ] IPv4 and IPv6 routing tables
-- [ ] OSPF neighbor states
-- [ ] RIP learned routes
-- [ ] BGP session states and advertised/learned prefixes
-- [ ] Cross-site ping and traceroute outputs
-- [ ] Troubleshooting notes and fixes
+**MP-BGP IPv6 is not used** in the supplied Packet Tracer topology; this limitation is intentionally documented.
