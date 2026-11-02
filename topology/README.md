@@ -1,5 +1,12 @@
-# Topology
+# Exact Packet Tracer topology
 
-The original Cisco Packet Tracer `.pkt` file and an accurately labeled network diagram will be added here when available.
+The full, original lab contains **Marseille (AS200), Lyon (AS100), Paris (AS300)** with eight routers R0–R7, switches, PCs and three inter-AS serial links.
 
-The conceptual diagram in the root README does not assert exact device numbers, connections or autonomous systems.
+- R1 ↔ R3: `13.0.0.0/30`
+- R2 ↔ R4: `24.0.0.0/30`
+- R3 ↔ R4: `34.0.0.0/30`
+- Marseille interior: R0 ↔ R1, R0 ↔ R2
+- Lyon interior: R3 ↔ R5
+- Paris interior: R4 ↔ R6 and R4 ↔ R7
+
+The original `PLAN ADDRESSAGE.pkt` and topology screenshots are included in the project materials supplied for documentation; the GitHub copy of those **binary files** still requires separate upload. See [architecture](../docs/architecture.md) for detailed interfaces and protocols.
