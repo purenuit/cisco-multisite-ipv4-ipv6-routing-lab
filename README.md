@@ -7,23 +7,11 @@ A hands-on, CLI-configured, dual-stack routing lab interconnecting three autonom
 
 > **Important limitation:** Inter-AS BGP is implemented for **IPv4**. The Packet Tracer router image used in this lab does not support the required MP-BGP IPv6 implementation; the IPv6 inter-AS paths were therefore handled with **static routes**. This is not IPv6 BGP.
 
-## Physical and logical topology
+## Original Packet Tracer topology
 
-```text
-                    MARSEILLE — AS 200
-PC0 — S0 — R0 — R1 =====[13.0.0.0/30]===== R3 — R5 — SS1 — PC51
-       |     |                                  |        \— SS2 — PC52
-PC2 — S2 — R2 =====[24.0.0.0/30]===== R4     LYON — AS 100
-                                            ||
-                       R3 =====[34.0.0.0/30]===== R4
-                                                  | \
-                                                  R6  R7
-                                                /   \   \
-                                             PC61  PC62 PC7
-                                                   PARIS — AS 300
-```
+The **only authoritative diagram** for this project is my original Cisco Packet Tracer topology, supplied as `plan.png` / `plan2.png` and `PLAN ADDRESSAGE.pkt`. No regenerated, conceptual or substitute network diagram is used here.
 
-Above is a **simplified logical map**; refer to the original Packet Tracer file and topology screenshot for the exact connections. Inter-AS links: **R1–R3 (13.0.0.0/30)**, **R2–R4 (24.0.0.0/30)** and **R3–R4 (34.0.0.0/30)**.
+The original image and `.pkt` file must be uploaded to the repository before an image can be embedded here. Inter-AS serial links shown in the original plan: **R1–R3 (13.0.0.0/30)**, **R2–R4 (24.0.0.0/30)** and **R3–R4 (34.0.0.0/30)**.
 
 | Site | AS | Routers | IPv4 site prefix | IPv6 site prefix | Interior routing |
 | --- | --- | --- | --- | --- | --- |
