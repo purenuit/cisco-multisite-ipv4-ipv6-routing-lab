@@ -10,7 +10,11 @@ The goal was to understand how addressing choices, routing protocol boundaries a
 
 ## 2. The network I designed
 
-**The original Packet Tracer topology is the reference for this project.** No generated or alternative diagram is used. The actual topology diagrams are `plan.png` and `plan2.png`.
+**The original Packet Tracer topology is the reference for this project.** No generated or alternative diagram is used.
+
+![Original Cisco Packet Tracer multi-site infrastructure](topology/plan.png)
+
+[View the original infrastructure screenshot](topology/plan.png).
 
 The lab is divided into three autonomous systems:
 
