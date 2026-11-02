@@ -1,0 +1,65 @@
+# Selected CLI excerpt based on supplied evidence; not a full export.
+enable
+configure terminal
+hostname R4
+interface g0/1
+ ip address 172.16.6.69 255.255.255.252
+ no shutdown
+exit
+interface g0/2
+ ip address 172.16.6.65 255.255.255.252
+ no shutdown
+exit
+interface s0/0/0
+ ip address 24.0.0.2 255.255.255.252
+ no shutdown
+exit
+interface s0/0/1
+ ip address 34.0.0.2 255.255.255.252
+ no shutdown
+exit
+router ospf 10
+ network 172.16.64.0 0.0.0.3 area 0
+ network 172.16.68.0 0.0.0.3 area 0
+ distance 95
+ passive-interface s0/0/1
+ passive-interface s0/0/0
+ router-id 40.40.40.40
+ redistribute static subnets
+ auto-cost reference-bandwidth 10000
+ default-information originate
+exit
+interface loopback0
+ ip address 2.2.2.2 255.255.255.255
+exit
+ip route 0.0.0.0 0.0.0.0 loopback0
+interface g0/2
+ ip ospf hello-interval 20
+ ip ospf dead-interval 80
+ ip ospf cost 5
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 <REDACTED>
+exit
+interface g0/1
+ ip ospf hello-interval 20
+ ip ospf dead-interval 80
+ ip ospf cost 6
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 <REDACTED>
+exit
+router bgp 300
+ neighbor 24.0.0.1 remote-as 200
+ neighbor 34.0.0.1 remote-as 100
+ network 172.16.0.0 mask 255.255.252.0
+ network 172.16.4.0 mask 255.255.254.0
+ network 172.16.6.0 mask 255.255.255.192
+ network 172.16.6.64 mask 255.255.255.252
+ network 172.16.6.68 mask 255.255.255.252
+exit
+ipv6 unicast-routing
+ipv6 router ospf 11
+ default-information originate
+ passive-interface serial 0/0/0
+ passive-interface serial 0/0/1
+ router-id 4.4.4.4
+exit
