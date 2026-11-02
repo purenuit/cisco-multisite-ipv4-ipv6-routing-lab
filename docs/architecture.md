@@ -40,9 +40,3 @@ This page is grounded in the supplied Packet Tracer diagram and the R0–R7 comm
 | R2 (AS200, 24.0.0.1) | R4 (AS300, 24.0.0.2) | IPv4 |
 | R3 (AS100, 34.0.0.1) | R4 (AS300, 34.0.0.2) | IPv4 |
 
-## Important consistency checks
-
-1. Some source `network` lines do not exactly match the attached interface masks; ensure the intended prefixes actually exist in the routing table before claiming BGP advertisements.
-2. The R4 text transcript includes `172.16.64.0` and `172.16.68.0` in OSPF network statements; the interface addressing and visible FULL neighbor screenshot instead use `172.16.6.64/30` and `172.16.6.68/30`. Confirm the **live** configuration.
-3. R5's written default IPv4 next hop is `10.0.1.1`, while the R3-R5 link is `10.10.1.0/30`; check whether this is a typo.
-4. Some script headings and command attempts reflect iterative troubleshooting. Files in this repository document the work but do not claim every line is a validated final running configuration.
